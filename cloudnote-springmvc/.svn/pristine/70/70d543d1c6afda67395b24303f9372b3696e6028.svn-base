@@ -1,0 +1,215 @@
+package com.ces.cloud.note.core.action;
+
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.lucene.document.DateTools.Resolution;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ces.cloud.note.base.action.BaseAction;
+import com.ces.cloud.note.base.util.WebJsonUtils;
+import com.ces.cloud.note.core.manage.NoteBookManage;
+import com.ces.cloud.note.core.manage.NoteManage;
+import com.ces.cloud.note.core.pojo.Note;
+import com.ces.cloud.note.core.pojo.NoteBook;
+
+/**
+ * 相关描述： 笔记本Action类
+ *
+ * 文件名：NoteBookAction.java
+ * 作者： Fu Zhaohui 
+ * 完成时间：2013-1-11 上午11:43:56 
+ * 维护人员：Fu Zhaohui  
+ * 维护时间：2013-1-11 上午11:43:56 
+ * 维护原因：  
+ * 当前版本： v1.0 
+ *
+ */
+@Controller  
+@RequestMapping("/blog") 
+public class NoteBookAction extends BaseAction{
+	
+	@Resource
+	private NoteBookManage noteBookManage;
+	
+	@Resource
+	private NoteManage noteManage;
+	
+	@RequestMapping("/index") 
+	public Resolution listUserNoteBook() {
+		String username ="ces";// (String) getSession().getAttribute("userName");
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if(username != null && !username.equals("")) {
+			Note lastEditNote = noteManage.queryLastAuthorNote(username);
+			resultMap.put("lastEditNote", lastEditNote);
+			List<NoteBook> noteBooks = noteBookManage.queryNoteBookByUser(username);
+			boolean lastEditFlag = false;
+			for(NoteBook noteBook : noteBooks) {
+				
+				List<Note> listNote =  noteManage.queryNoteByNoteBook(noteBook.getNotebook_id());
+				if(!lastEditFlag) {
+					for(int i = 0; i < listNote.size(); i++) {
+						if(listNote.get(i).getNotes_id() == lastEditNote.getNotes_id()) {
+							listNote.get(i).setLastEditFlag(1);
+							lastEditFlag = true;
+							break;
+						}
+					}
+				}
+				noteBook.getNotes().addAll(listNote);
+			}
+			NoteBook recycleNoteBook = new NoteBook();
+			recycleNoteBook.setNotebook_id(-1);
+			recycleNoteBook.setNotebook_name("回收站");
+			List<Note> deleteNoteList = noteManage.queryDeleteNote(username);
+			recycleNoteBook.getNotes().addAll(deleteNoteList);
+			noteBooks.add(recycleNoteBook);
+			resultMap.put("noteBookList", noteBooks);
+			try {
+				String resultJsonStr = WebJsonUtils.toJson(resultMap, false);
+				return new StreamingResolution("text/plain;charset=UTF-8", new StringReader(resultJsonStr));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendMsg("{\"success\": false, \"msg\": \"数据转换Json出错!\"}");
+			} 
+			
+		} else {
+			return sendMsg("{\"success\": false, \"msg\": \"当前用户为空!\"}");
+		}
+	}
+	
+	public String addNoteBook(){
+		NoteBook noteBook = new NoteBook();
+		String username = (String) getSession().getAttribute("userName");
+		if(username != null && !username.equals("")) {
+			noteBook.setUserid(username);
+			String noteBookName = noteBook.getNotebook_name();
+			if(noteBookName != null && !noteBookName.trim().equals("")) {
+				try {
+					noteBook.setNotebook_name(exchangeEncode(noteBookName));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			} else {
+				sendMsg("{\"success\": false, \"msg\": \"笔记本名数据异常!\"}");
+			}
+			noteBook.setCreate_time(new Date());
+			String callBackStr = noteBookManage.addNoteBook(noteBook);
+			sendMsg(callBackStr);
+		} else {
+			sendMsg("{\"success\": false, \"msg\": \"当前用户为空!\"}");
+		}
+		return "JsonData";
+	}
+	
+	public Resolution searchNotes() {
+		String username = (String) getSession().getAttribute("userName");
+		if(username != null && !username.equals("")) {
+			String searchParam = getRequest().getParameter("searchParam");
+			List<NoteBook> noteBooks = noteBookManage.queryNoteBookByUser(username);
+			Map<Integer, NoteBook> noteBookMap = new HashMap<Integer, NoteBook>();
+			for(NoteBook noteBook : noteBooks) {
+				noteBookMap.put(noteBook.getNotebook_id(), noteBook);
+			}
+			if(searchParam != null && !searchParam.trim().equals("")) {
+				List<NoteBook> searchNoteBookList = new ArrayList<NoteBook>();
+				try {
+					searchParam = exchangeEncode(searchParam);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				Note lastEditNote = noteManage.searchNotesLatestNote(searchParam, username);
+				List<Note> searchNoteList = noteManage.searchNotes(searchParam, username);
+				for(int i = 0; i < searchNoteList.size(); i++) {
+					if(noteBookMap.get(searchNoteList.get(i).getNotebook_id()) != null) {
+						noteBookMap.get(searchNoteList.get(i).getNotebook_id()).getNotes().add(searchNoteList.get(i));
+					}
+					if(searchNoteList.get(i).getNotes_id() == lastEditNote.getNotes_id()) {
+						searchNoteList.get(i).setLastEditFlag(1);
+					}
+				}
+				searchNoteBookList.addAll(noteBookMap.values());
+				for(int j = searchNoteBookList.size() -1 ; j >= 0; j--) {
+					System.out.println(searchNoteBookList.get(j).getNotes() + ": " + searchNoteBookList.get(j).getNotebook_id());
+					if(searchNoteBookList.get(j).getNotes() == null || searchNoteBookList.get(j).getNotes().size() == 0) {
+						searchNoteBookList.remove(j);
+					}
+				}
+				//this.noteBookList = searchNoteBookList;
+			}  else {
+				return listUserNoteBook();
+			}
+		} else {
+			sendMsg("{\"success\": false, \"msg\": \"当前用户为空!\"}");
+		}
+		return new StreamingResolution("text", new StringReader(""));
+	}
+	
+	public String setDefaultNoteBook(){
+		String username = (String) getSession().getAttribute("userName");
+		if(username != null && !username.equals("")) {
+			String noteBookId = getRequest().getParameter("noteBookId");
+			if(noteBookId == null || noteBookId.equals("")) {
+				sendMsg("{\"success\": false, \"msg\": \"传入数据异常!\"}");
+			} else {
+				String callbackStr = noteBookManage.setDefaultNoteBook(Integer.parseInt(noteBookId), username);
+				sendMsg(callbackStr);
+			}
+		} else {
+			sendMsg("{\"success\": false, \"msg\": \"当前用户为空!\"}");
+		}
+		return "JsonData";
+	}
+	
+	public String renameNoteBook() {
+		String noteBookId = getRequest().getParameter("noteBookId");
+		String newNoteBookName = getRequest().getParameter("newNoteBookName");
+		if(newNoteBookName != null && !newNoteBookName.trim().equals("")) {
+			try {
+				newNoteBookName = exchangeEncode(newNoteBookName);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		} else {
+			sendMsg("{\"success\": false, \"msg\": \"新笔记本名数据异常!\"}");
+		}
+		
+		if(noteBookId == null || noteBookId.equals("")) {
+			sendMsg("{\"success\": false, \"msg\": \"传入数据异常!\"}");
+		} else {
+			String callbackStr = noteBookManage.renameNoteBook(Integer.parseInt(noteBookId), newNoteBookName);
+			sendMsg(callbackStr);
+		}
+		return "JsonData";
+	}
+	
+	public String removeNoteBook() {
+		String username = (String) getSession().getAttribute("userName");
+		if(username != null && !username.equals("")) {
+			String noteBookId = getRequest().getParameter("noteBookId");
+			if(noteBookId == null || noteBookId.equals("")) {
+				sendMsg("{\"success\": false, \"msg\": \"传入数据异常!\"}");
+			} else {
+				int  defaultNoteBookId = noteBookManage.queryDefaultNoteBook(username).getNotebook_id();
+				if(defaultNoteBookId == Integer.parseInt(noteBookId)) {
+					sendMsg("{\"success\": false, \"msg\": \"默认笔记本不能删除!\"}");
+				} else {
+					noteManage.moveAllNotes(defaultNoteBookId, Integer.parseInt(noteBookId));
+					String callbackStr = noteBookManage.removeNoteBook(Integer.parseInt(noteBookId));
+					sendMsg(callbackStr);
+				}
+			}
+		} else {
+			sendMsg("{\"success\": false, \"msg\": \"当前用户为空!\"}");
+		}
+		return "JsonData";
+	}
+}

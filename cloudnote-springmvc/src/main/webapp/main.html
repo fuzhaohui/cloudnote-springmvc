@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="Author" content="Just van den Broecke">
+
+<link href="css/main.css" rel="stylesheet">
+<link href="css/jHtmlArea.css" rel="stylesheet">
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="js/color.js"></script>
+<script type="text/javascript" src="js/jHtmlArea.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="js/fakeData.js"></script>
+
+<title>Note Book</title>
+</head>
+<body>
+	<div class="div-upload" id="divUpload">
+		<img src="./resource/images/loading.gif" id="loading" style="float:right;display: none;">
+        <input type="file" id="attachment" name="attachment" style="float:left;" />
+        <input type="button" value="上传" onclick="return ajaxFileUpload();"style="float:left;margin-top:1px;"/>
+		<div id="divCloseUpload" style="heigt:22px;width:22px;float:right;line-heigt:24px;font-size:20px;cursor:pointer;margin-top:2px;">✘</div>
+		<div class="hidden" id="divUrlHidden"></div>
+		<div class="hidden" id="divTypeHidden"></div>
+		<div class="hidden" id="divFileNameHidden"></div>
+	</div>
+	<div class="hidden" id="divVersionNoteId"></div>
+	<div class="hidden" id="divVersion"></div>
+	<div class="div-version-list hidden" id="divVersionList"></div>
+	<div class="div-preview hidden" id="divPreview"></div>
+	<img class="div-loading" id="divLoading" src="./resource/images/loading.gif" />
+	<div class="div-top" id="divTop">
+		<input type="text" class="input-text-search" id="inputTextSearch"
+			value="搜索笔记" />
+		<div class="div-search-button" id="divSearchButton">
+			<span class="span-search-text" id="spanSearchText">搜&nbsp;索</span>
+		</div>
+	</div>
+	<div class="div-left" id="divLeft"></div>
+	<div class="div-right" id="divRight">
+		
+		<div class="div-note-info" id="divNoteInfo">
+			<span class="span-note-name" id="spanNoteName" title="更改笔记名"></span>
+			<span class="span-note-id hidden" id="spanNoteId"></span>
+			<span class="span-notebook-id hidden" id="spanNotebookId"></span>
+			<span class="span-note-version hidden" id="spanNoteVersion"></span>
+		</div>
+		<div class="div-note-editor-font-family hidden"
+			id="divNoteEditorFontFamily">
+			<ul>
+				<li class="hidden" id="liSelectFontFamilyHidden"></li>
+				<li class="li-font li-font-SimSun">宋体</li>
+				<li class="li-font li-font-NSimSun">新宋体</li>
+				<li class="li-font li-font-FangSong_GB2312">仿宋</li>
+				<li class="li-font li-font-KaiTi_GB2312">楷体</li>
+				<li class="li-font li-font-SimHei">黑体</li>
+				<li class="li-font li-font-MicrosoftYaHei">微软雅黑</li>
+				<li class="li-font li-font-Arial">Arial</li>
+				<li class="li-font li-font-ArialBlack">Arial Black</li>
+				<li class="li-font li-font-TimesNewRoman">Times New Roman</li>
+				<li class="li-font li-font-CourierNew">Courier New</li>
+				<li class="li-font li-font-Tahoma">Tahoma</li>
+				<li class="li-font li-font-Verdana">Verdana</li>
+			</ul>
+		</div>
+		<div class="div-note-editor-font-size hidden"
+			id="divNoteEditorFontSize">
+			<ul>
+				<li class="hidden" id="liSelectFontSizeHidden"></li>
+				<li class="li-font li-font-10px">1(10px)</li>
+				<li class="li-font li-font-12px">2(12px)</li>
+				<li class="li-font li-font-14px">3(14px)</li>
+				<li class="li-font li-font-18px">4(18px)</li>
+				<li class="li-font li-font-24px">5(24px)</li>
+				<li class="li-font li-font-36px">6(36px)</li>
+				<li class="li-font li-font-48px">7(48px)</li>
+			</ul>
+		</div>
+		<div class="div-note-editor" id="divNoteEditor"></div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="Author" content="Just van den Broecke">
+
+<link href="assets/style.css" rel="stylesheet">
+<script type="text/javascript"  src="js/jquery.min.js"> </script>
+
+<title>Pushlets</title>
+</head>
+<body>
+	<p>
+		<a href="ajax/ajax-2.html">服务器往Browser推送数据</a>
+	</p>
+	<p>
+		<a href="chat/chat.html">Web IM</a>
+	</p> 
+	<p>
+		<a href="notebook/listUserNoteBook.do">笔记本列表</a>
+	</p>
+	<p>
+		<a href="note/authorLastNote.do">用户最新笔记</a>
+	<p>
+	<p>
+		<a href="notebook/addNoteBook.do">添加笔记本</a>
+	</p>
+	<p>
+		<a href="notebook/setDefaultNoteBook.do">设置默认笔记本</a>
+	</p>
+	<p>
+		<a href="notebook/renameNoteBook.do">修改用户笔记本名称</a>
+	</p>
+	<p>
+		<a href="notebook/removeNoteBook.do">删除笔记本</a>
+	</p>
+	<p>
+		<a href="note/addNote.do">点击保存笔记</a>
+	</p>
+	<p>
+		<a href="note/editNote.do">定时更新笔记</a>
+	</p>
+	<p>
+		<a href="note/deleteNote.do">删除笔记</a>
+	</p>
+	<p>
+		<a href="note/moveNote.do">移动笔记</a>
+	</p>
+	<p>
+		<a href="note/moveAllNotes.do">移动笔记本中所有笔记</a>
+	</p>
+	<p>
+		<a href="note/restNote.do">恢复笔记</a>
+	</p>
+	<p>
+		<a href="note/restAllNotes.do">恢复所有用户删除笔记</a>
+	</p>
+	<p>
+		<a href="note/removeNote.do">清空笔记</a>
+	</p>
+	<p>
+		<a href="note/removeAllNotes.do">清空用户删除所有笔记</a>
+	</p>
+</body>
+</html>

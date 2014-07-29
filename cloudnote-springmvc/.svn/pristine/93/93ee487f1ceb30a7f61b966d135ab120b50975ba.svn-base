@@ -1,0 +1,59 @@
+package com.ces.cloud.note.base.action;
+
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.lucene.document.DateTools.Resolution;
+
+
+public abstract class BaseAction {
+	
+	private ActionBeanContext context;
+	
+	protected HttpServletResponse getResponse() {
+		HttpServletResponse response =  getContext().getResponse();
+		response.setContentType("text/html;charset=utf-8");
+		return response;
+	}
+	
+	protected HttpServletRequest getRequest() {
+		return getContext().getRequest();
+	}
+	
+	protected HttpSession getSession() {
+		return getRequest().getSession();
+	}
+	
+	protected Resolution sendMsg(final String content) {
+		
+		return new StreamingResolution("text/plain;charset=UTF-8") {
+			@Override
+			protected void stream(HttpServletResponse response) throws Exception {
+				response.getWriter().write(content);
+			}
+			
+		};
+	}
+	
+	protected String exchangeEncode(String paramValue) throws UnsupportedEncodingException {
+		if (paramValue != null && !paramValue.equals("")) {
+			return new String(paramValue.getBytes("ISO-8859-1"), "UTF-8");
+		} else {
+			return "";
+		}
+	}
+
+	@Override
+	public ActionBeanContext getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(ActionBeanContext context) {
+		this.context = context;
+	}
+	
+}

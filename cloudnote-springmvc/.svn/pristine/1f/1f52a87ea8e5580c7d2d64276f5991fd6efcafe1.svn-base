@@ -1,0 +1,89 @@
+package com.ces.cloud.note.core.action;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import org.apache.lucene.document.DateTools.Resolution;
+
+import com.ces.cloud.note.base.action.BaseAction;
+
+/**
+ * 相关描述：
+ *
+ * 文件名：DownloadAction.java
+ * 作者： Fu Zhaohui 
+ * 完成时间：2013-1-18 下午2:23:18 
+ * 维护人员：Fu Zhaohui  
+ * 维护时间：2013-1-18 下午2:23:18 
+ * 维护原因：  
+ * 当前版本： v1.0 
+ *
+ */
+@UrlBinding("/action/attachment")
+public class AttachmentAction extends BaseAction {
+	
+	private String noteId;
+	private String fileName;
+
+	/*public InputStream getDownloadFile() throws FileNotFoundException,
+	    UnsupportedEncodingException {
+		String username = (String) getSession().getAttribute("userName");
+		if(username != null && !username.equals("")) {
+			fileName =  exchangeEncode(fileName);
+			String trim = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+			String downloadFineName = EncryptUtils.encryptMD5(fileName.substring(0, fileName.lastIndexOf("."))) + trim;
+			String userAttachmentPathStr = "/"+ username + "/" + noteId + "/";
+			return ServletActionContext.getServletContext().getResourceAsStream(userAttachmentPathStr + downloadFineName);
+		} else {
+			return null;
+		}
+		
+	}
+	
+
+	public String getDownloadFileName() {
+		try {
+			if(getRequest().getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0){
+				return URLEncoder.encode(this.fileName, "UTF-8");
+			} else {
+				return  new String(this.fileName.getBytes("UTF-8"), "ISO8859-1");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}*/
+	
+	@DefaultHandler
+	public Resolution download() {
+		return new StreamingResolution("application/octet-stream", buildDowloadSource()).setFilename(fileName);
+	}
+		
+	public InputStream buildDowloadSource() {
+		
+		String rootPath = getContext().getServletContext().getRealPath("/");
+		String filePath = rootPath + "/public/Fedora.png";
+		try {
+		return new FileInputStream(filePath);
+		} catch (FileNotFoundException ex) {
+		getContext().getValidationErrors().addGlobalError(new SimpleError("Can not found file!"));
+		}
+		return null;
+	}
+
+	public String getNoteId() {
+		return noteId;
+	}
+	public void setNoteId(String noteId) {
+		this.noteId = noteId;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+}
