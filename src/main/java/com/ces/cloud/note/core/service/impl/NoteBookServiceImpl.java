@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ces.cloud.note.core.dao.NoteBookDao;
@@ -25,7 +26,12 @@ import com.ces.cloud.note.core.service.NoteBookService;
  *
  */
 @Service
+@Transactional(propagation = Propagation.SUPPORTS,  readOnly = true)
 public class NoteBookServiceImpl implements NoteBookService {
+	
+	/*@Autowired
+    @Qualifier("sqlSessionFactory")
+    private SqlSessionFactory sqlSessionFactory;*/
 	
 	@Autowired
 	private NoteBookDao noteBookDao;

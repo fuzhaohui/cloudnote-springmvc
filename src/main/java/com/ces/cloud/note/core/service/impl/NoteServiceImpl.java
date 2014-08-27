@@ -29,6 +29,11 @@ import com.ces.cloud.note.core.service.NoteService;
 @Transactional(propagation = Propagation.SUPPORTS,  readOnly = true)
 public class NoteServiceImpl implements NoteService {
 	
+	/*@Autowired
+    @Qualifier("sqlSessionFactory")
+    private SqlSessionFactory sqlSessionFactory;*/
+
+	
 	@Autowired
 	private NoteDao noteDao;
 
